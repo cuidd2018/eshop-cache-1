@@ -27,6 +27,10 @@ public class ProductInventoryCacheRefreshRequest implements Request {
         //先查询
         ProductInventory newProInventory = productInventoryService.getProductInventory(productId);
         logger.info(">>>>>ProductInventoryCacheRefreshRequest-process:"+newProInventory);
+        if(newProInventory == null){
+            logger.info(">>>>>ProductInventoryCacheRefreshRequest-process,从数据库中查出的库存信息为空，productId="+productId);
+            return;
+        }
         //更新缓存
         productInventoryService.setProductInventoryCache(newProInventory);
     }
@@ -36,4 +40,18 @@ public class ProductInventoryCacheRefreshRequest implements Request {
         return productId;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ProductInventoryCacheRefreshRequest that = (ProductInventoryCacheRefreshRequest) o;
+
+        return productId.equals(that.productId);
+    }
+
+    @Override
+    public int hashCode() {
+        return productId.hashCode();
+    }
 }

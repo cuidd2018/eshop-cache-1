@@ -27,8 +27,9 @@ public class RequestAsyncProcessServiceImpl implements RequestAsyncProcessServic
             ArrayBlockingQueue<Request> queue = getRoutingQueue(request.getProductId());
             logger.info(">>>>>RequestAsyncProcessServiceImpl-process, 路由到相应的队列，productId="+request.getProductId()+",uuid:"+ UUID.randomUUID());
             //读请求去重优化，如果是读请求并且队列中有对应的读请求则不用再发一次请求了
-            if(request instanceof ProductInventoryCacheRefreshRequest){
-                queue.contains(request);
+            if(request instanceof ProductInventoryCacheRefreshRequest && queue.contains(request)){
+                logger.info("读请求队列去重，productId:{}",request.getProductId());
+                return;
             }
             //将请求放入对应的队列中，完成路由操作;采用put会阻塞，当队列满时，会一直等待直到可以插入队列
             queue.put(request);
