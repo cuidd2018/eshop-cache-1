@@ -9,7 +9,7 @@ import javax.servlet.ServletContextListener;
  * 系统初始化监听器
  * Created by xuery on 2018/1/23.
  */
-public class InitListener implements ServletContextListener {
+public class RequestProcessorInitListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {

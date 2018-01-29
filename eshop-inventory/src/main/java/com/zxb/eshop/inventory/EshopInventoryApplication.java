@@ -1,6 +1,7 @@
 package com.zxb.eshop.inventory;
 
-import com.zxb.eshop.inventory.listener.InitListener;
+import com.zxb.eshop.inventory.listener.KafkaInitListener;
+import com.zxb.eshop.inventory.listener.RequestProcessorInitListener;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.mybatis.spring.SqlSessionFactoryBean;
@@ -57,14 +58,25 @@ public class EshopInventoryApplication {
 		return jedisCluster;
 	}
 
+//	/**
+//	 * 模拟redis数据库双写注册监听器
+//	 * @return
+//	 */
+//	@Bean
+//	public ServletListenerRegistrationBean servletListenerRegistrationBean(){
+//		ServletListenerRegistrationBean servletListenerRegistrationBean = new ServletListenerRegistrationBean();
+//		servletListenerRegistrationBean.setListener(new RequestProcessorInitListener());
+//		return  servletListenerRegistrationBean;
+//	}
+
 	/**
-	 * 注册监听器
+	 * kafka注册监听器
 	 * @return
 	 */
 	@Bean
 	public ServletListenerRegistrationBean servletListenerRegistrationBean(){
 		ServletListenerRegistrationBean servletListenerRegistrationBean = new ServletListenerRegistrationBean();
-		servletListenerRegistrationBean.setListener(new InitListener());
+		servletListenerRegistrationBean.setListener(new KafkaInitListener());
 		return  servletListenerRegistrationBean;
 	}
 
