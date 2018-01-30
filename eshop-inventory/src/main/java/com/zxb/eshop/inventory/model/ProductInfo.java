@@ -16,6 +16,7 @@ public class ProductInfo {
 	private String color;
 	private String size;
 	private Long shopId;
+	private String modifiedTime;
 	
 	public ProductInfo() {
 		
@@ -94,6 +95,14 @@ public class ProductInfo {
 		this.shopId = shopId;
 	}
 
+	public String getModifiedTime() {
+		return modifiedTime;
+	}
+
+	public void setModifiedTime(String modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
+
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("{");
@@ -115,6 +124,8 @@ public class ProductInfo {
 				.append(size).append('\"');
 		sb.append(",\"shopId\":")
 				.append(shopId);
+		sb.append(",\"modifiedTime\":\"")
+				.append(modifiedTime).append('\"');
 		sb.append('}');
 		return sb.toString();
 	}

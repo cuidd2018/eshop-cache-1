@@ -1,6 +1,7 @@
 package com.zxb.eshop.inventory.listener;
 
 import com.zxb.eshop.inventory.kafka.KafkaConsumer;
+import com.zxb.eshop.inventory.rebuild.RebuildCacheThread;
 import com.zxb.eshop.inventory.spring.SpringContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,10 @@ public class KafkaInitListener implements ServletContextListener{
 
         //开启一个线程注册一个消费者
         logger.info("注册一个消费者start");
-        new Thread(new KafkaConsumer("cache-message")).start();
+        new Thread(new KafkaConsumer("cache-product-info")).start();
+        //开启一个线程从队列中取出商品信息更新缓存
+        logger.info("开启一个线程用于商品信息缓存更新");
+        new Thread(new RebuildCacheThread()).start();
     }
 
     @Override

@@ -1,7 +1,9 @@
 package com.zxb.eshop.inventory.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.zxb.eshop.inventory.model.ProductInfo;
 import com.zxb.eshop.inventory.model.ShopInfo;
+import com.zxb.eshop.inventory.rebuild.RebuildCacheQueue;
 import com.zxb.eshop.inventory.service.CacheService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +44,18 @@ public class CacheController {
         logger.info(">>>getProductInfo start, productId={}",productId);
         ProductInfo productInfo = cacheService.getProductInfoFromRedisCache(productId);
         logger.info(">>>getProductInfo,productId={},redis缓存商品内容为:{}",productId, productInfo);
+        if(productInfo == null){
+            productInfo = cacheService.getProductInfoFromLocalCache(productId);
+            logger.info(">>>getProductInfo,productId={},ehcache本地缓存商品内容为:{}",productId, productInfo);
+        }
+        if(productInfo == null){
+            //todo xuery 这时候只能从数据库中查了,这个逻辑先待定
+            //这里模拟并发缓存重建,这里直接写死，实际中需要从mysql中读取
+            String productInfoJSON = "{\"id\": 6, \"name\": \"iphone7手机\", \"price\": 5599, \"pictureList\":\"a.jpg,b.jpg\", \"specification\": \"iphone7的规格\", \"service\": \"iphone7的售后服务\", \"color\": \"红色,白色,黑色\", \"size\": \"5.5\", \"shopId\": 1, \"modifiedTime\": \"2017-01-01 12:01:00\"}";
+            productInfo = JSONObject.parseObject(productInfoJSON, ProductInfo.class);
+            RebuildCacheQueue rebuildCacheQueue = RebuildCacheQueue.getInstance();
+            rebuildCacheQueue.putProductInfo(productInfo);
+        }
         return productInfo;
     }
 
@@ -51,6 +65,13 @@ public class CacheController {
         logger.info(">>>getShopInfo start, shopId={}",shopId);
         ShopInfo shopInfo = cacheService.getShopInfoFromRedisCache(shopId);
         logger.info(">>>getShopInfo,shopId={},redis缓存店铺内容为:{}",shopId,shopInfo);
+        if(shopInfo == null){
+            shopInfo = cacheService.getShopInfoFromLocalCache(shopId);
+            logger.info(">>>getShopInfo,shopId={},ehcache缓存店铺内容为:{}",shopId,shopInfo);
+        }
+        if(shopInfo == null){
+            //todo xuery 从数据库中查询
+        }
         return shopInfo;
     }
 }
