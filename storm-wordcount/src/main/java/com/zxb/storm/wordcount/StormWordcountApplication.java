@@ -1,4 +1,4 @@
-package com.zxb.storm.wordcount.stormwordcount;
+package com.zxb.storm.wordcount;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
