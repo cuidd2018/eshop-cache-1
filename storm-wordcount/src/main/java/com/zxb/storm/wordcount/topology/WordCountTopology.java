@@ -143,18 +143,18 @@ public class WordCountTopology {
         //将spout/bolt串成一个拓扑，让数据流起来
         TopologyBuilder builder = new TopologyBuilder();
 
-        builder.setSpout("randomSentence",new RandomSentenceSpout(),2); //2代表开启两个executor
-        builder.setBolt("splitSentence", new SplitSentence(),5)
-                .setNumTasks(10)                    //一个executor开启10个task
+        builder.setSpout("randomSentence",new RandomSentenceSpout(),1); //2代表开启两个executor
+        builder.setBolt("splitSentence", new SplitSentence(),2)
+                .setNumTasks(4)                    //一个executor开启10个task
                 .shuffleGrouping("randomSentence"); //上一级task到下一级task的映射规则为随机
-        builder.setBolt("wordCount",new WordCount(),10)
-                .setNumTasks(20)
+        builder.setBolt("wordCount",new WordCount(),4)
+                .setNumTasks(8)
                 .fieldsGrouping("splitSentence", new Fields("word")); //这里必须定为按照单词来路由到下一级task，统计单词次数必须保证同一个单词进入同一个task
 
         Config config = new Config();
         if(args != null && args.length > 0){
             //命令行执行
-            config.setNumWorkers(3); //设置进程数
+            config.setNumWorkers(1); //设置进程数
             try{
                 StormSubmitter.submitTopology(args[0], config, builder.createTopology());
             }catch (Exception e){
