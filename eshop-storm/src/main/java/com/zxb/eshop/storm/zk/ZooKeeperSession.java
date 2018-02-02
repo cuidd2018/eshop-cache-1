@@ -115,7 +115,7 @@ public class ZooKeeperSession {
         try {
             zookeeper.delete(path, -1);
         } catch (Exception e) {
-            logger.error("deleteZkNode error,path={}, errorMsg:", path, e);
+            logger.error("deleteZkNode error,path={}, node doesn't exist", path);
         }
     }
 

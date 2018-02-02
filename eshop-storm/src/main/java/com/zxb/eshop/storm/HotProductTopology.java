@@ -20,10 +20,10 @@ public class HotProductTopology {
 
         builder.setSpout("accessLogMessage", new AccessLogKafkaSpout(), 1);
         builder.setBolt("logParseProductId", new LogParseBolt(), 2)
-                .setNumTasks(4)
+                .setNumTasks(2)
                 .shuffleGrouping("accessLogMessage");
-        builder.setBolt("productCount", new ProductCountBolt(), 4)
-                .setNumTasks(8)
+        builder.setBolt("productCount", new ProductCountBolt(), 2)
+                .setNumTasks(2)
                 .fieldsGrouping("logParseProductId", new Fields("productId"));
 
         Config config = new Config();

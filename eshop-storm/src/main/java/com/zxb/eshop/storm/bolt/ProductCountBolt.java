@@ -32,7 +32,7 @@ public class ProductCountBolt extends BaseRichBolt {
 
     private LRUMap<Long, Long> productCountMap = new LRUMap<>(1000); //storm api自带的LRUMap
 
-    private static final Long GET_TOP3_TIME_INTERVAL = 10000L; //统计访问次数top3商品时间间隔
+    private static final Long GET_TOP3_TIME_INTERVAL = 20000L; //统计访问次数top3商品时间间隔
 
     private static final String TASKID_LIST_LOCK_PATH = "/taskid-list-lock";
 
@@ -103,12 +103,16 @@ public class ProductCountBolt extends BaseRichBolt {
                 }
                 //将统计出来的top3写入zk对应的node中, 是当前task自己统计出的top3所以不用加锁
                 String top3ProductStr = JSONArray.toJSONString(top3ProductList);
+                zkSession.createNode("/task-hot-product-list-"+taskId);
                 zkSession.setNodeData("/task-hot-product-list-"+taskId, top3ProductStr);
                 logger.info("productCountBolt计算top3 end--, top3ProductList={}",top3ProductList);
 
-                //todo xuery 这里可能需要将"/taskid-status-"+id先清除下，不然路由到当前taskId的热门商品只能在第一次循环中成功预热，之后如果有其他商品进入这里
-                //但是由于"/taskid-status-"+id已经为success了，并行预热线程是不会去预热的
-//                zkSession.deleteZkNode("/taskid-status-" + taskId); //注释和打开看下效果
+                /**
+                 * 这里必须将"/taskid-status-"+id先清除下，不然路由到当前taskId的热门商品只能在第一次循环中成功预热，之后如果有其他商品进入这里
+                 *但是由于"/taskid-status-"+id已经为success了，并行预热线程是不会去预热的
+                 * 不加的话只能预热一次，这里循环去统计热点数据也就没意义了
+                 */
+                zkSession.deleteZkNode("/taskid-status-" + taskId); //注释和打开看下效果
             }
         }
     }
