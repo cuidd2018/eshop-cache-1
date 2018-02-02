@@ -120,6 +120,14 @@
 			<artifactId>zookeeper</artifactId>
 			<version>3.4.5</version>
 		</dependency>
+
+		<!--storm依赖-->
+		<dependency>
+			<groupId>org.apache.storm</groupId>
+			<artifactId>storm-core</artifactId>
+			<version>1.1.0</version>
+			<!--<scope>provided</scope>-->
+		</dependency>
 	</dependencies>
 
 	<build>
