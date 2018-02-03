@@ -27,6 +27,8 @@ public class RequestAsyncProcessServiceImpl implements RequestAsyncProcessServic
             ArrayBlockingQueue<Request> queue = getRoutingQueue(request.getProductId());
             logger.info(">>>>>RequestAsyncProcessServiceImpl-process, 路由到相应的队列，productId="+request.getProductId()+",uuid:"+ UUID.randomUUID());
             //读请求去重优化，如果是读请求并且队列中有对应的读请求则不用再发一次请求了
+            //这里去重对应高并发是很有用的，如果一个热门商品库存瞬间几万的访问量并且刚好缓存中没有，如果全部放入队列，则靠后的人延迟可能非常大
+            //queue的大小也就100，这时候阻塞会非常严重
             if(request instanceof ProductInventoryCacheRefreshRequest && queue.contains(request)){
                 logger.info("读请求队列去重，productId:{}",request.getProductId());
                 return;

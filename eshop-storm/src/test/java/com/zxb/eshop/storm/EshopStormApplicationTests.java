@@ -1,4 +1,4 @@
-package com.zxb.eshop.storm.eshopstorm;
+package com.zxb.eshop.storm;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

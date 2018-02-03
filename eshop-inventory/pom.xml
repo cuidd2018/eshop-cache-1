@@ -108,10 +108,17 @@
 			<version>2.8.3</version>
 		</dependency>
 
+		<!--kafka依赖，其中已经有zk依赖了-->
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka_2.9.2</artifactId>
 			<version>0.8.1</version>
+			<exclusions>
+				<exclusion>
+                    <groupId>org.apache.zookeeper</groupId>
+					<artifactId>zookeeper</artifactId>
+                </exclusion>
+			</exclusions>
 		</dependency>
 
 		<!--zookeeper，用于实现分布式锁-->
@@ -119,6 +126,16 @@
 			<groupId>org.apache.zookeeper</groupId>
 			<artifactId>zookeeper</artifactId>
 			<version>3.4.5</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!--storm依赖-->

@@ -26,6 +26,7 @@ public class ProductInventoryDBUpdateRequest implements Request{
     public void process() {
         logger.info(">>>>>ProductInventoryDBUpdateRequest-process,删除缓存开始,"+productInventory);
         //先删除redis缓存
+        // todo 注意：如果有本地缓存也要一并删除，不过对于实时性要求高的一般不会采用本地缓存，直接就是数据库+redis双写的方案
         productInventoryService.removeProductInventoryCache(productInventory);
 
         //模拟等待10s，在这10s之内如果有读库存的操作，最后能否保证缓存数据库一致
