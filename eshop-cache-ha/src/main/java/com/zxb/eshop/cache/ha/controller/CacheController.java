@@ -141,4 +141,19 @@ public class CacheController {
         return "success";
     }
 
+    @RequestMapping("/getProductInfoReject")
+    @ResponseBody
+    public void getProductInfoRejectTest(){
+        for (int i = 0; i < 30; i++) {
+            int index = i;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("第"+(index+1)+"次商品查询结果start---");
+                    GetProductInfoCommand getProductInfoCommand = new GetProductInfoCommand(-2L);
+                    System.out.println("第" + (index + 1) + "次商品查询结果为：" + getProductInfoCommand.execute());
+                }
+            }).start();
+        }
+    }
 }
