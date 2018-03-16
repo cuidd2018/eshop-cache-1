@@ -6,7 +6,7 @@ import com.zxb.eshop.inventory.model.ProductInfo;
 import com.zxb.eshop.inventory.model.ShopInfo;
 import com.zxb.eshop.inventory.service.CacheService;
 import com.zxb.eshop.inventory.spring.SpringContext;
-import com.zxb.eshop.inventory.utils.SleepUtil;
+import com.zxb.eshop.inventory.common.utils.SleepUtil;
 import com.zxb.eshop.inventory.zk.ZooKeeperSession;
 import kafka.consumer.ConsumerIterator;
 import kafka.consumer.KafkaStream;

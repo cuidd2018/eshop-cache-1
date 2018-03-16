@@ -1,7 +1,11 @@
 package com.zxb.eshop.inventory.listener;
 
+import com.zxb.eshop.inventory.spring.SpringContext;
 import com.zxb.eshop.inventory.thread.RequestProcessorThreadPool;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -13,6 +17,14 @@ public class RequestProcessorInitListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+
+        /**
+         * Spring上下文初始化
+         */
+        ServletContext sc = sce.getServletContext();
+        ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(sc);
+        SpringContext.setApplicationContext(context);
+
         //初始化工作线程和内存队列
         /**
          * 初始化了一个请求线程池

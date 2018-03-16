@@ -60,6 +60,15 @@ public class CacheController {
         return productInfo;
     }
 
+    @RequestMapping("saveProductInfo")
+    @ResponseBody
+    public void saveProductInfo(long productId){
+        ProductInfo productInfo = new ProductInfo();
+        productInfo.setId(productId);
+        productInfo.setName("hystrix productInfo 测试商品"+productId);
+        cacheService.saveProductInfo2RedisCache(productInfo);
+    }
+
     @RequestMapping("getShopInfo")
     @ResponseBody
     public ShopInfo getShopInfo(long shopId) {
@@ -74,6 +83,15 @@ public class CacheController {
             //todo xuery 从数据库中查询
         }
         return shopInfo;
+    }
+
+    @RequestMapping("saveShopInfo")
+    @ResponseBody
+    public void saveShopInfo(long shopId){
+        ShopInfo shopInfo = new ShopInfo();
+        shopInfo.setId(shopId);
+        shopInfo.setName("hystrix shopInfo 测试商品"+shopId);
+        cacheService.saveShopInfo2RedisCache(shopInfo);
     }
 
     /**

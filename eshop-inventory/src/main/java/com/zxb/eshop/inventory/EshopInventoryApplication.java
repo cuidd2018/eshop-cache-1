@@ -58,27 +58,27 @@ public class EshopInventoryApplication {
 		return jedisCluster;
 	}
 
-//	/**
-//	 * 模拟redis数据库双写注册监听器
-//	 * @return
-//	 */
-//	@Bean
-//	public ServletListenerRegistrationBean servletListenerRegistrationBean(){
-//		ServletListenerRegistrationBean servletListenerRegistrationBean = new ServletListenerRegistrationBean();
-//		servletListenerRegistrationBean.setListener(new RequestProcessorInitListener());
-//		return  servletListenerRegistrationBean;
-//	}
+	/**
+	 * 模拟redis数据库双写注册监听器
+	 * @return
+	 */
+	@Bean
+	public ServletListenerRegistrationBean redisServletListenerRegistrationBean(){
+		ServletListenerRegistrationBean servletListenerRegistrationBean = new ServletListenerRegistrationBean();
+		servletListenerRegistrationBean.setListener(new RequestProcessorInitListener());
+		return  servletListenerRegistrationBean;
+	}
 
 	/**
 	 * kafka注册监听器
 	 * @return
 	 */
-	@Bean
-	public ServletListenerRegistrationBean servletListenerRegistrationBean(){
-		ServletListenerRegistrationBean servletListenerRegistrationBean = new ServletListenerRegistrationBean();
-		servletListenerRegistrationBean.setListener(new KafkaInitListener());
-		return  servletListenerRegistrationBean;
-	}
+//	@Bean
+//	public ServletListenerRegistrationBean kafkaServletListenerRegistrationBean(){
+//		ServletListenerRegistrationBean servletListenerRegistrationBean = new ServletListenerRegistrationBean();
+//		servletListenerRegistrationBean.setListener(new KafkaInitListener());
+//		return  servletListenerRegistrationBean;
+//	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(EshopInventoryApplication.class, args);

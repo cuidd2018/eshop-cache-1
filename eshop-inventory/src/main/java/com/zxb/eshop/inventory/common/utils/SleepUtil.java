@@ -1,4 +1,4 @@
-package com.zxb.eshop.inventory.utils;
+package com.zxb.eshop.inventory.common.utils;
 
 /**
  * Created by xuery on 2018/1/29.

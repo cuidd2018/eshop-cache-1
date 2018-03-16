@@ -1,6 +1,6 @@
 package com.zxb.eshop.inventory.zk;
 
-import com.zxb.eshop.inventory.utils.SleepUtil;
+import com.zxb.eshop.inventory.common.utils.SleepUtil;
 import org.apache.storm.utils.Utils;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;

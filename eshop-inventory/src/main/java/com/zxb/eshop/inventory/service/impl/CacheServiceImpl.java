@@ -1,7 +1,12 @@
 package com.zxb.eshop.inventory.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.zxb.eshop.inventory.common.RedisKeyPrefixConstant;
 import com.zxb.eshop.inventory.dao.RedisDAO;
+import com.zxb.eshop.inventory.hystrix.command.GetProductInfoFromRedisCacheCommand;
+import com.zxb.eshop.inventory.hystrix.command.GetShopInfoFromRedisCacheCommand;
+import com.zxb.eshop.inventory.hystrix.command.SaveProductInfo2RedisCacheCommand;
+import com.zxb.eshop.inventory.hystrix.command.SaveShopInfo2RedisCacheCommand;
 import com.zxb.eshop.inventory.model.ProductInfo;
 import com.zxb.eshop.inventory.model.ShopInfo;
 import com.zxb.eshop.inventory.service.CacheService;
@@ -20,64 +25,56 @@ public class CacheServiceImpl implements CacheService {
     @Autowired
     private RedisDAO redisDAO;
 
-    public static final String CACHE_NAME = "local";
-    public static final String PRODUCT_INFO = "product_info_";
-    public static final String SHOP_INFO = "shop_info_";
-
     //value指定ehcache中配置的缓存策略，@Cacheable不覆盖k-v(相当于get，只有第一次会写缓存),@CachePut会覆盖k-v(相当于set，每次都会写缓存)
     @Override
-    @Cacheable(value = CACHE_NAME, key = "'key_'+#id")
+    @Cacheable(value = RedisKeyPrefixConstant.CACHE_NAME, key = "'key_'+#id")
     public ProductInfo getProductInfoFromLocalCache(Long id) {
         return null;
     }
 
     @Override
-    @CachePut(value = CACHE_NAME, key = "'key_'+#productInfo.getId()")
+    @CachePut(value = RedisKeyPrefixConstant.CACHE_NAME, key = "'key_'+#productInfo.getId()")
     public ProductInfo saveProductInfo2LocalCache(ProductInfo productInfo) {
         return productInfo;
     }
 
     @Override
-    @Cacheable(value = CACHE_NAME, key = "'key_'+#id")
+    @Cacheable(value = RedisKeyPrefixConstant.CACHE_NAME, key = "'key_'+#id")
     public ShopInfo getShopInfoFromLocalCache(Long id) {
         return null;
     }
 
     @Override
-    @CachePut(value = CACHE_NAME, key = "'key_'+#shopInfo.getId()")
+    @CachePut(value = RedisKeyPrefixConstant.CACHE_NAME, key = "'key_'+#shopInfo.getId()")
     public ShopInfo saveShopInfo2LocalCache(ShopInfo shopInfo) {
         return shopInfo;
     }
 
+    /**
+     *将一下四个方法改造成hystrixCommand调用
+     * 20180316 xuery
+     */
     @Override
     public void saveProductInfo2RedisCache(ProductInfo productInfo) {
-        String key = PRODUCT_INFO + productInfo.getId();
-        redisDAO.set(key, JSONObject.toJSONString(productInfo));
+        SaveProductInfo2RedisCacheCommand saveProductInfo2RedisCacheCommand = new SaveProductInfo2RedisCacheCommand(productInfo);
+        Boolean result = saveProductInfo2RedisCacheCommand.execute();
     }
 
     @Override
     public void saveShopInfo2RedisCache(ShopInfo shopInfo) {
-        String key = SHOP_INFO + shopInfo.getId();
-        redisDAO.set(key, JSONObject.toJSONString(shopInfo));
+        SaveShopInfo2RedisCacheCommand saveShopInfo2RedisCacheCommand = new SaveShopInfo2RedisCacheCommand(shopInfo);
+        Boolean result = saveShopInfo2RedisCacheCommand.execute();
     }
 
     @Override
     public ProductInfo getProductInfoFromRedisCache(Long productId) {
-        String key = PRODUCT_INFO + productId;
-        String productInfoJson = redisDAO.get(key);
-        if(StringUtils.isBlank(productInfoJson)){
-            return null;
-        }
-        return JSONObject.parseObject(productInfoJson, ProductInfo.class);
+        GetProductInfoFromRedisCacheCommand getProductInfoFromRedisCacheCommand = new GetProductInfoFromRedisCacheCommand(productId);
+        return getProductInfoFromRedisCacheCommand.execute();
     }
 
     @Override
     public ShopInfo getShopInfoFromRedisCache(Long shopId) {
-        String key = SHOP_INFO + shopId;
-        String shopInfoJson = redisDAO.get(key);
-        if(StringUtils.isBlank(shopInfoJson)){
-            return null;
-        }
-        return JSONObject.parseObject(shopInfoJson, ShopInfo.class);
+        GetShopInfoFromRedisCacheCommand getShopInfoFromRedisCacheCommand = new GetShopInfoFromRedisCacheCommand(shopId);
+        return getShopInfoFromRedisCacheCommand.execute();
     }
 }
