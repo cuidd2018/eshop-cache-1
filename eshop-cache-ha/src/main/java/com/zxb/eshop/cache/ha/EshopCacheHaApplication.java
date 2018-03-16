@@ -1,5 +1,6 @@
 package com.zxb.eshop.cache.ha;
 
+import com.netflix.hystrix.contrib.metrics.eventstream.HystrixMetricsStreamServlet;
 import com.zxb.eshop.cache.ha.filter.HystrixRequestContextFilter;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.tomcat.jdbc.pool.DataSource;
@@ -10,6 +11,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -46,6 +48,13 @@ public class EshopCacheHaApplication {
 	public FilterRegistrationBean indexFilterRegistration(){
 		FilterRegistrationBean registration = new FilterRegistrationBean(new HystrixRequestContextFilter());
 		registration.addUrlPatterns("/*"); // 必须是/* 不能为/
+		return registration;
+	}
+
+	@Bean
+	public ServletRegistrationBean indexServletRegistration(){
+		ServletRegistrationBean registration = new ServletRegistrationBean(new HystrixMetricsStreamServlet());
+		registration.addUrlMappings("/hystrix.stream");
 		return registration;
 	}
 
