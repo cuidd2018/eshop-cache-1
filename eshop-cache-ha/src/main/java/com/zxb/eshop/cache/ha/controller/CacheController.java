@@ -4,10 +4,7 @@ import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixObservableCommand;
 import com.zxb.eshop.cache.ha.cache.local.LocationCache;
 import com.zxb.eshop.cache.ha.http.MyHttpUtil;
-import com.zxb.eshop.cache.ha.hystrix.command.GetBrandNameCommand;
-import com.zxb.eshop.cache.ha.hystrix.command.GetCityNameCommand;
-import com.zxb.eshop.cache.ha.hystrix.command.GetProductInfoCommand;
-import com.zxb.eshop.cache.ha.hystrix.command.GetProductInfosCommand;
+import com.zxb.eshop.cache.ha.hystrix.command.*;
 import com.zxb.eshop.cache.ha.model.ProductInfo;
 import com.zxb.eshop.cache.ha.vo.MyHttpResponse;
 import org.springframework.stereotype.Controller;
@@ -20,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
  * Created by xuery on 2018/2/28.
@@ -91,7 +89,7 @@ public class CacheController {
     @RequestMapping("/getProductInfos")
     @ResponseBody
     public String getProductInfo(String productIds) {
-        String[] ids = productIds.split(",");
+        /*String[] ids = productIds.split(",");
         HystrixObservableCommand<ProductInfo> getProductInfosCommand = new GetProductInfosCommand(ids);
         List<ProductInfo> productInfoList = new ArrayList<>();
         //异步调用，hot，已经执行过construct方法了
@@ -114,42 +112,55 @@ public class CacheController {
                 productInfoList.add(productInfo);
                 System.out.println("onNext:" + productInfo);
             }
-        });
+        });*/
 
         //还未执行construct方法
-//        Observable<ProductInfo> toObservable = getProductInfosCommand.toObservable();
+        /*Observable<ProductInfo> toObservable = getProductInfosCommand.toObservable();
 
-//        toObservable.subscribe(new Observer<ProductInfo>() { //订阅之后才执行construct方法
-//            @Override
-//            public void onCompleted() {
-//                System.out.println(">>>>已经获取完所有的商品信息:" + productInfoList);
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//                e.printStackTrace();
-//            }
-//
-//            @Override
-//            public void onNext(ProductInfo productInfo) {
-//                productInfoList.add(productInfo);
-//                System.out.println("onNext:" + productInfo);
-//            }
-//        });
+        toObservable.subscribe(new Observer<ProductInfo>() { //订阅之后才执行construct方法
+            @Override
+            public void onCompleted() {
+                System.out.println(">>>>已经获取完所有的商品信息:" + productInfoList);
+            }
 
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onNext(ProductInfo productInfo) {
+                productInfoList.add(productInfo);
+                System.out.println("onNext:" + productInfo);
+            }
+        });*/
+
+        String[] productIdArr = productIds.split(",");
+        List<Future<ProductInfo>> futures = new ArrayList<>();
+        for (String productId : productIdArr) {
+            GetProductInfosCollapser getProductInfosCollapser = new GetProductInfosCollapser(Long.parseLong(productId));
+            futures.add(getProductInfosCollapser.queue());
+        }
+        try {
+            for (Future<ProductInfo> future : futures) {
+                System.out.println("GET PRODUCTINFOS RESULT:" + future.get());
+            }
+        } catch (Exception e) {
+
+        }
 
         return "success";
     }
 
     @RequestMapping("/getProductInfoReject")
     @ResponseBody
-    public void getProductInfoRejectTest(){
+    public void getProductInfoRejectTest() {
         for (int i = 0; i < 30; i++) {
             int index = i;
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println("第"+(index+1)+"次商品查询结果start---");
+                    System.out.println("第" + (index + 1) + "次商品查询结果start---");
                     GetProductInfoCommand getProductInfoCommand = new GetProductInfoCommand(-2L);
                     System.out.println("第" + (index + 1) + "次商品查询结果为：" + getProductInfoCommand.execute());
                 }
